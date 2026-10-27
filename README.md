@@ -1,10 +1,10 @@
 # Docker-Juice
 
-Image Docker légère pour [Juice](https://github.com/Automattic/juice), qui intègre
-le CSS directement dans le HTML. Base officielle `node:24-alpine`, exécution
-sans privilèges (`node`) dans `/data`, Juice installé sans version épinglée.
+Lightweight Docker image for [Juice](https://github.com/Automattic/juice), which
+inlines CSS into HTML. Based on the official `node:24-alpine` image, running as
+the unprivileged `node` user in `/data`, with an unpinned Juice installation.
 
-## Utilisation
+## Usage
 
 ```bash
 docker run --rm drdpham/juice:latest --help
@@ -12,16 +12,16 @@ printf '%s\n' '<style>p { color: red; }</style><p>Hello Juice</p>' \
   | docker run --rm -i drdpham/juice:latest - - > output.html
 ```
 
-Pour un fichier local :
+For a local file:
 
 ```bash
 docker run --rm -v "$(pwd):/data:ro" drdpham/juice:latest input.html - > output.html
 ```
 
-Le dossier et le fichier doivent être accessibles à l’utilisateur `node`.
-Utiliser uniquement du HTML de confiance : Juice peut charger des ressources externes.
+The directory and file must be accessible to the `node` user.
+Only process trusted HTML: Juice can load external resources.
 
-## Test local
+## Local test
 
 ```bash
 docker build -t juice:test .
@@ -30,17 +30,21 @@ printf '%s\n' '<style>p { color: red; }</style><p>Hello Juice</p>' \
   | docker run --rm -i juice:test - -
 ```
 
-Résultat attendu : `<p style="color: red;">Hello Juice</p>`.
+Expected output: `<p style="color: red;">Hello Juice</p>`.
 
-## Publication
+## Publishing
 
-GitHub Actions construit les pull requests sans publier. Les pushes sur `main`
-et les lancements manuels depuis `main` publient
-[`drdpham/juice:latest`](https://hub.docker.com/r/drdpham/juice).
-Configurer les secrets `DOCKERHUB_USERNAME` et `DOCKERHUB_TOKEN` avec accès
-en écriture au dépôt Docker Hub.
+GitHub Actions builds pull requests without publishing. Pushes to `main`
+and manual runs from `main` publish
+[`drdpham/juice:latest`](https://hub.docker.com/r/drdpham/juice) by default.
+Under **Settings → Secrets and variables → Actions**, configure:
 
-## Licence
+- **Variable:** `DOCKERHUB_IMAGE` — destination repository without a tag
+  (defaults to `drdpham/juice` when unset).
+- **Secrets:** `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN`, with write access
+  to the destination Docker Hub repository.
 
-Ce dépôt est distribué sous [GPL-3.0](LICENSE). Juice et l’image Node conservent
-leurs licences respectives.
+## License
+
+This repository is licensed under [GPL-3.0](LICENSE). Juice and the Node image
+retain their respective licenses.
